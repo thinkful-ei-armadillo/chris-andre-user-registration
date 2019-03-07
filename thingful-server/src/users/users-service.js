@@ -1,4 +1,9 @@
-const REGEX_UPPER_LOWER_NUMBER_SPECIAL = /(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&])[\S]+/
+'use strict'; 
+
+const xss = require('xss'); 
+const bcrypt = require('bcryptjs'); 
+
+const REGEX_UPPER_LOWER_NUMBER_SPECIAL = /(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&])[\S]+/; 
 
 const UsersService = {
   hasUserWithUserName(db, user_name) {
@@ -32,6 +37,21 @@ const UsersService = {
 
     return null;
   },
+
+  hashPassword(password) {
+    return bcrypt.hash(password, 12); 
+  },
+  
+  serializeUser(user) {
+    return {
+      id: user.id,
+      full_name: xss(user.full_name),
+      user_name: xss(user.user_name),
+      nickname: xss(user.nick_name),
+      date_created: user.date_created
+    }; 
+  }, 
+
 };
 
 module.exports = UsersService;
